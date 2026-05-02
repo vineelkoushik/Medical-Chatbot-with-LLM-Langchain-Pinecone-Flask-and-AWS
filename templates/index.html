@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical Chatbot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="chat-bg">
+
+<div class="chat-container">
+
+    <div class="chatbox">
+        {% for c in chats %}
+            <div class="msg user">{{ c.message }}</div>
+            <div class="msg bot">{{ c.response }}</div>
+        {% endfor %}
+    </div>
+
+    <form method="POST" class="input">
+        <input name="message" placeholder="Ask medical question..." required>
+        <button type="submit">Send</button>
+    </form>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Medical AI</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+<div class="topbar">
+    🩺 Medical AI Assistant
+</div>
+
+<div class="chat-container">
+
+    <div id="chat-box"></div>
+
+    <form id="form">
+        <input id="msg" placeholder="Ask your medical question..." />
+        <button>Send</button>
+    </form>
+
+</div>
+
+<script>
+const chatBox = document.getElementById("chat-box");
+
+function scrollToBottom() {
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+document.getElementById("form").onsubmit = async (e) => {
+    e.preventDefault();
+
+    let msgInput = document.getElementById("msg");
+    let msg = msgInput.value;
+
+    if (!msg.trim()) return;
+
+    // 👉 USER MESSAGE (instant render)
+    chatBox.innerHTML += `
+        <div class="msg user-msg">
+            <span class="icon">👤</span>
+            <span class="text">${msg}</span>
+        </div>
+    `;
+
+    scrollToBottom();
+    msgInput.value = "";
+
+    // 👉 LOADING MESSAGE
+    let loadingId = "load_" + Date.now();
+
+    chatBox.innerHTML += `
+        <div class="msg bot-msg" id="${loadingId}">
+            <span class="icon">🧑‍⚕️</span>
+            <span class="text">Typing...</span>
+        </div>
+    `;
+
+    scrollToBottom();
+
+    // 👉 FETCH RESPONSE
+    let res = await fetch("/get", {
+        method: "POST",
+        body: new URLSearchParams({msg})
+    });
+
+    let data = await res.text();
+
+    // 👉 REPLACE LOADING
+    document.getElementById(loadingId).innerHTML = `
+        <span class="icon">🧑‍⚕️</span>
+        <span class="text">${data}</span>
+    `;
+
+    scrollToBottom();
+};
+</script>
+
+</body>
+</html>
